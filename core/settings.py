@@ -29,7 +29,7 @@ if not SECRET_KEY:
 
 # Render Deployment Code
 #DEBUG = 'RENDER' not in os.environ
-DEBUG = False
+DEBUG = True
 # HOSTs List
 ALLOWED_HOSTS = ['*']
 

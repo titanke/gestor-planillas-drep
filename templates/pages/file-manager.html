@@ -29,21 +29,21 @@
 <div class="container-fluid py-4 px-5">
   <div class="row">
     <div class="col-lg-3 border py-2">
+      
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           {% for breadcrumb in breadcrumbs %}
+         
             {% if forloop.last %}
               <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.name }}</li>
             {% else %}
-              {% if breadcrumb.name|lower == 'media' %}
-                <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.name }}</li>
-              {% else %}
+           
                 <li class="breadcrumb-item"><a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a></li>
-              {% endif %}
             {% endif %}
           {% endfor %}
         </ol>
       </nav>
+
       <ul class="">
         {% for directory in directories %}
           {% if directory.directories %}
@@ -252,8 +252,8 @@ window.onload = function() {
 }
 
 document.getElementById("delete-directory").addEventListener("click", function(event){
-  
-  if(!confirm("¿Estás seguro de que quieres borrar este archivo?")){
+
+  if(!confirm('¿Estás seguro de que quieres borrar este archivo ')){
       event.preventDefault();
   }
 });

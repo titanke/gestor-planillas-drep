@@ -152,6 +152,7 @@ def mk_dir(request):
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
+    # Redirige al directorio recién creado
     return redirect(request.META.get('HTTP_REFERER'))
 
 
@@ -159,14 +160,20 @@ def delete_dir(request):
     media_path = os.path.join(settings.MEDIA_ROOT)
     selected_directory = request.POST.get('directory', '') 
     folder_path = os.path.join(media_path, selected_directory)
+    print(folder_path)
     if request.method == 'POST':
         try:
             if os.path.exists(folder_path):
-                shutil.rmtree(folder_path)
+                # Verifica si el nombre de la carpeta es "media"
+                if selected_directory.lower() != '':
+                    shutil.rmtree(folder_path)
+                else:
+                    print("No se puede borrar la carpeta 'media'.")
         except Exception as e:
             print(f"Error al eliminar el directorio: {e}")
 
-    return redirect(request.META.get('HTTP_REFERER'))
+    return redirect("/file-manager")
+
 
 """
 def delete_dir(request, dir_path):
