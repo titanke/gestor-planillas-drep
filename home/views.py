@@ -19,6 +19,7 @@ def index(request):
     # Page from the theme 
     return render(request, 'pages/dashboard.html', context=context)
 
+
 def convert_csv_to_text(csv_file_path):
     with open(csv_file_path, 'r') as file:
         reader = csv.reader(file)
