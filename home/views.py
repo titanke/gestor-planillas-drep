@@ -102,6 +102,7 @@ def file_manager(request, directory=''):
     return render(request, 'pages/file-manager.html', context)
 
 
+
 def generate_nested_directory(root_path, current_path):
     directories = []
     for name in os.listdir(current_path):
