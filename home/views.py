@@ -20,6 +20,17 @@ def index(request):
     return render(request, 'pages/dashboard.html', context=context)
 
 
+def firmas(request):
+    # Create the context dictionary with data to pass to the template
+    context = {
+        'title': 'My Simple Page',
+        'message': 'This is a simple HTML page displayed by a Django view.',
+    }
+
+    # Render the HTML template using the context data
+    return render(request, 'pages/firmas.html', context)
+
+
 def convert_csv_to_text(csv_file_path):
     with open(csv_file_path, 'r') as file:
         reader = csv.reader(file)
@@ -177,14 +188,3 @@ def delete_dir(request):
     return redirect("/file-manager")
 
 
-"""
-def delete_dir(request, dir_path):
-    path = dir_path.replace('%slash%', '/')
-    absolute_dir_path = os.path.join(settings.MEDIA_ROOT, path)
-    if request.method == 'POST':
-        if os.path.exists(absolute_dir_path):
-            shutil.rmtree(absolute_dir_path)
-            print("Directory deleted", absolute_dir_path)
-
-    return redirect(request.META.get('HTTP_REFERER'))
-"""
