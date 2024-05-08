@@ -50,8 +50,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    'whitenoise.runserver_nostatic', #Make sure to add this 
+    'whitenoise.runserver_nostatic',
     "django.contrib.staticfiles",
+    "django_custom_error_views",
     "home",
     "core",
 ]
@@ -59,7 +60,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware', #make sure to add this line
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -86,6 +87,31 @@ TEMPLATES = [
         },
     },
 ]
+
+DJANGO_CUSTOM_ERROR_VIEWS = {
+    "company_logo": "static/img/image-sign-ins.jpg", # Static image or full URL
+    "400": {
+        "title": "Custom 400 error.",
+        "description": "Custom 400 description.",
+        "extra_content": "400 extras.",
+    },
+    "403": {
+        "title": "Error 403.",
+        "description": "No tiene permiso para ingresar a esta carpeta",
+        "render_exception": False,
+    },
+    "404": {
+        "title": "Custom 404 Error.",
+        "description": "Custom 404 description.",
+        "extra_content": "404 extras.",
+        "render_exception": True,
+    },
+    "500": {
+        "title": "Custom 500 Error.",
+        "description": "Custom 500 description.",
+        "extra_content": "500 extras.",
+    },
+}
 
 WSGI_APPLICATION = "core.wsgi.application"
 

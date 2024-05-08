@@ -80,21 +80,13 @@
               >
                 {{ directory.name }}
               </a>
-            </li>            {% endif %}
+            </li>            
+            {% endif %}
           {% endfor %}
         {% endif %}  
 
-          {% if request.user.is_superuser %}
             {% include 'includes/subdirectories.html' with directory=directory depth=depth|add:"3" %}
-          {% else %}
-            {% for group in request.user.groups.all %}
-              {% if directory.name == group.name%}
-                {% include 'includes/subdirectories.html' with directory=directory depth=depth|add:"3" %}
-              {% endif %}
-            {% endfor %}
-          {% endif %}       
-          
-          
+                  
         {% else %}
                 {% if request.user.is_superuser  %}
                     <li>
@@ -122,7 +114,7 @@
     <div class="col-lg-9 border py-2">
       <div class="d-flex justify-content-start mb-3">
         <label for="fileInput">
-          {% if request.user.is_authenticated and request.user.is_superuser %}
+          {% if request.user.is_authenticated  %}
 
           <i class="fa-solid fa-upload text-primary fs-3"></i>
           {% endif %}
@@ -189,13 +181,9 @@
                   <span data-bs-toggle="modal" data-bs-target="#delete-{{forloop.counter}}">
                     <i title="Borrar" class="fa-solid fa-trash text-danger"></i>
                   </span>
-                  {% endif %}
 
-                  <div class="dot-separator mx-2"></div>
-                  <a href="http://127.0.0.1:8000/firmas/?dir={{ file.file }}" target="_blank">
-                    <i title="Firmar" class="fa-solid fa-pen text-success"></i>
-                </a>
-                
+                {% endif %}
+
                 </div>
               </td>
             </tr>
@@ -234,30 +222,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- Modal Sign-->
-            <div class="modal fade" id="sign-{{forloop.counter}}" data-bs-backdrop="static" data-bs-keyboard="false"
-            tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ file.filename }}</h1>
-                  <span>
-                    <a href="{% url 'download_file' file.file|encoded_file_path %}">
-                      <i title="Descargar" class="fa-solid fa-download text-success fs-4"></i>
-                    </a>
-                  </span>
-                  <div class="" id="modal-close-btn-{{forloop.counter}}" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="fa-solid fa-circle-xmark fs-5"></i>
-                  </div>
-                </div>
-                <div class="modal-body">
-                </div>
-              </div>
-            </div>
-          </div>
-          
-
 
             <!-- Delete Modal -->
             <div class="modal fade" id="delete-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

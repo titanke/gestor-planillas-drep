@@ -12,6 +12,5 @@ urlpatterns = [
     path('mk-dir/', views.mk_dir, name='mk_dir'),
     path('delete-dir/', views.delete_dir, name='delete_dir'),
     path('save-info/<str:file_path>/', views.save_info, name='save_info'),
-    path('firmas/', views.firmas, name='firmas'),
 
 ]

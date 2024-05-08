@@ -8,6 +8,8 @@ from home.models import FileInfo
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 import shutil
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseForbidden
 
 def index(request):
 
@@ -19,16 +21,9 @@ def index(request):
     # Page from the theme 
     return render(request, 'pages/dashboard.html', context=context)
 
+def custom_403_view(request, exception=None):
+    return render(request, 'layouts/403.html', status=403)
 
-def firmas(request):
-    # Create the context dictionary with data to pass to the template
-    context = {
-        'title': 'My Simple Page',
-        'message': 'This is a simple HTML page displayed by a Django view.',
-    }
-
-    # Render the HTML template using the context data
-    return render(request, 'pages/firmas.html', context)
 
 
 def convert_csv_to_text(csv_file_path):
@@ -91,16 +86,25 @@ def get_breadcrumbs(request):
     return breadcrumbs
 
 @login_required(login_url='/accounts/login/')
-def file_manager(request, directory=''):
+def file_manager(request, directory='/'):
     media_path = os.path.join(settings.MEDIA_ROOT)
     directories = generate_nested_directory(media_path, media_path)
+    # Si el usuario es un administrador, tiene acceso a todos los directorios
+    if request.user.is_superuser or directory == '/':
+        pass
+    else:
+        # Obtener los nombres de los grupos a los que pertenece el usuario
+        user_groups = request.user.groups.values_list('name', flat=True)
+
+        # Si ninguna subcarpeta del directorio está en los grupos del usuario, lanzar una excepción
+        if not any(subdir in user_groups for subdir in directory.split('/')):
+            raise PermissionDenied("No tienes permiso para acceder a este directorio.")
     selected_directory = directory
 
     files = []
     selected_directory_path = os.path.join(media_path, selected_directory)
     if os.path.isdir(selected_directory_path):
         files = get_files_from_directory(selected_directory_path)
-
     breadcrumbs = get_breadcrumbs(request)
 
     context = {
