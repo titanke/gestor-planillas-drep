@@ -1,6 +1,8 @@
 import os
+import time
 import uuid
 import csv
+import io
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, FileResponse, Http404
 from django.conf import settings
@@ -10,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 import shutil
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
+import zipfile
 
 def index(request):
 
@@ -24,6 +27,30 @@ def index(request):
 def custom_403_view(request, exception=None):
     return render(request, 'layouts/403.html', status=403)
 
+def convert_bytes_to_mb(size_in_bytes):
+    """Convierte el tamaño del archivo de bytes a megabytes."""
+    size_in_mb = size_in_bytes / (1024 * 1024)  # 1 MB = 1024 * 1024 bytes
+    return size_in_mb
+
+def download_all(request):
+    media_path = os.path.join(settings.MEDIA_ROOT)
+    selected_directory = request.POST.get('directory', '') 
+    selected_directory_path = os.path.join(media_path, selected_directory)
+
+    # Crea un archivo zip en memoria
+    zip_io = io.BytesIO()
+    with zipfile.ZipFile(zip_io, 'w') as zip_file:
+        for filename in os.listdir(selected_directory_path):
+            file_path = os.path.join(selected_directory_path, filename)
+            zip_file.write(file_path, arcname=filename)
+
+    zip_io.seek(0)
+
+    # Crea una respuesta con el archivo zip
+    response = FileResponse(zip_io, content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename=t/{selected_directory}.zip'
+
+    return response
 
 
 def convert_csv_to_text(csv_file_path):
@@ -49,12 +76,17 @@ def get_files_from_directory(directory_path):
                     csv_text = convert_csv_to_text(file_path)
                 else:
                     csv_text = ''
-
+                # Recupera la fecha y hora de subida de los metadatos del archivo
+                upload_date = time.strftime('%d/%m/%Y %H:%M', time.localtime(os.path.getmtime(file_path)))   
+                file_size = os.path.getsize(file_path)
+                file_size_mb = convert_bytes_to_mb(file_size)
                 files.append({
                     'file': file_path.split(os.sep + 'media' + os.sep)[1],
                     'filename': filename,
                     'file_path': file_path,
-                    'csv_text': csv_text
+                    'csv_text': csv_text,
+                    'upload_date': upload_date,
+                    'size': file_size_mb,  # Agrega el tamaño del archivo a la información del archivo
                 })
             except Exception as e:
                 print( ' > ' +  str( e ) )    
@@ -86,11 +118,11 @@ def get_breadcrumbs(request):
     return breadcrumbs
 
 @login_required(login_url='/accounts/login/')
-def file_manager(request, directory='/'):
+def file_manager(request, directory=''):
     media_path = os.path.join(settings.MEDIA_ROOT)
     directories = generate_nested_directory(media_path, media_path)
     # Si el usuario es un administrador, tiene acceso a todos los directorios
-    if request.user.is_superuser or directory == '/':
+    if request.user.is_superuser or directory == '':
         pass
     else:
         # Obtener los nombres de los grupos a los que pertenece el usuario
@@ -152,11 +184,15 @@ def upload_file(request):
     selected_directory = request.POST.get('directory', '') 
     selected_directory_path = os.path.join(media_path, selected_directory)
     if request.method == 'POST':
-        file = request.FILES.get('file')
-        file_path = os.path.join(selected_directory_path, file.name)
-        with open(file_path, 'wb') as destination:
-            for chunk in file.chunks():
-                destination.write(chunk)
+        files = request.FILES.getlist('file[]')
+        for file in files:
+            file_path = os.path.join(selected_directory_path, file.name)
+            with open(file_path, 'wb') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            # Guarda la fecha y hora de subida en los metadatos del archivo
+            os.utime(file_path, times=(time.time(), time.time()))
+            username = request.user.username  # Obtiene el nombre de usuario
 
     return redirect(request.META.get('HTTP_REFERER'))
 
