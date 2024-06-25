@@ -8,5 +8,6 @@ whitenoise
 gunicorn
 dj-database-url
 psycopg2-binary
- 
+django_custom_error_views
 # mysqlclient
+google-generativeai

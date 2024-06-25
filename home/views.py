@@ -14,13 +14,18 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
 import zipfile
 
+from django.http import JsonResponse
+from django.shortcuts import render, reverse
+from django.contrib.auth.decorators import login_required
+from .models import ChatBot
+from django.http import HttpResponseRedirect, JsonResponse
+import google.generativeai as genai
+
+
 def index(request):
-
     context = {}
-
     # Add context data here
     # context['test'] = 'OK'
-
     # Page from the theme 
     return render(request, 'pages/dashboard.html', context=context)
 
@@ -31,6 +36,54 @@ def convert_bytes_to_mb(size_in_bytes):
     """Convierte el tamaño del archivo de bytes a megabytes."""
     size_in_mb = size_in_bytes / (1024 * 1024)  # 1 MB = 1024 * 1024 bytes
     return size_in_mb
+
+
+genai.configure(api_key="AIzaSyA0M2ljxoufjlGy7bAGCMqw34217Mw6zag")
+#@login_required
+def ask_question(request):
+    views_dir = os.path.dirname(__file__)
+    ins_file_path = os.path.join(views_dir, 'ins.txt')
+    
+    with open(ins_file_path, "r", encoding='utf-8') as file:
+        instruccion = file.read()
+
+    if request.method == "POST":
+        text = request.POST.get("text")
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            system_instruction=instruccion,
+        )        
+        # Verificar si hay un usuario autenticado
+        if request.user.is_authenticated:
+            chat = model.start_chat()
+            response = chat.send_message(text)
+            ChatBot.objects.create(text_input=text, gemini_output=response.text, user=request.user)
+            response_data = {
+                "text": response.text,
+            }
+        else:
+            chat = model.start_chat()
+            response = chat.send_message(text)
+            response_data = {
+                "text": response.text,
+            }
+
+        return JsonResponse({"data": response_data})
+    else:
+        return HttpResponseRedirect(reverse("chat"))
+
+#@login_required
+def chat(request):
+    user = request.user
+    # Verificar si el usuario está autenticado
+    if user.is_authenticated:
+        chats = ChatBot.objects.filter(user=user)
+    else:
+        # Usuario no autenticado, manejar el caso apropiadamente
+        chats = []
+
+    return render(request, "pages/chatbot.html", {"chats": chats})
+
 
 def download_all(request):
     media_path = os.path.join(settings.MEDIA_ROOT)

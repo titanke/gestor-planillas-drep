@@ -49,27 +49,68 @@
       <!-- directorios //-->
       <ul class="">
         {% for directory in directories %}
-          {% if directory.directories %}
-          <li class="">
-            <i class="fa-solid fa-folder"></i>
-            <a 
-              data-bs-toggle="collapse" 
-              href="#collapse{{directory.id}}" 
-              role="button" 
-              aria-expanded="false"
-              aria-controls="collapse{{directory.id}}"
-              onclick="window.location.href = '{% url 'file_manager' directory.path|encoded_path %}';"
-            >
-              {{ directory.name }}
-            </a>
-          </li>
-          {% include 'includes/subdirectories.html' with directory=directory depth=depth|add:"3" %}
-        {% else %}
-          <li>
-            <i class="fa-solid fa-folder"></i>
-            <a href="{% url 'file_manager' directory.path|encoded_path %}">{{ directory.name }}</a>
-          </li>
-          {% endif %}
+            {% if directory.directories %}
+              {% if request.user.is_superuser %}
+                <li class="">
+                  <i class="fa-solid fa-folder"></i>
+                  <a 
+                    data-bs-toggle="collapse" 
+                    href="#collapse{{directory.id}}" 
+                    role="button" 
+                    aria-expanded="false"
+                    aria-controls="collapse{{directory.id}}"
+                    onclick="window.location.href = '{% url 'file_manager' directory.path|encoded_path %}';"
+                  >
+                    {{ directory.name }}
+                  </a>
+                </li>
+              {% else %}
+                {% for group in request.user.groups.all %}
+                  {% if directory.name == group.name%}
+                  <li class="">
+                    <i class="fa-solid fa-folder"></i>
+                    <a 
+                      data-bs-toggle="collapse" 
+                      href="#collapse{{directory.id}}" 
+                      role="button" 
+                      aria-expanded="false"
+                      aria-controls="collapse{{directory.id}}"
+                      onclick="window.location.href = '{% url 'file_manager' directory.path|encoded_path %}';"
+                    >
+                      {{ directory.name }}
+                    </a>
+                  </li>       
+                  {% endif %}
+                {% endfor %}
+            {% endif %}  
+
+              {% if request.user.is_superuser %}
+                {% include 'includes/subdirectories.html' with directory=directory depth=depth|add:"3" %}
+              {% else %}
+                {% for group in request.user.groups.all %}
+                  {% if directory.name == group.name%}
+                    {% include 'includes/subdirectories.html' with directory=directory depth=depth|add:"3" %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}       
+
+            {% else %}
+                {% if request.user.is_superuser  %}
+                  <li>
+                    <i class="fa-solid fa-folder"></i>
+                    <a href="{% url 'file_manager' directory.path|encoded_path %}">{{ directory.name }}</a>
+                  </li>      
+                {% else %}
+                  {% for group in request.user.groups.all %}
+                    {% if directory.name == group.name%}
+                      <li>
+                        <i class="fa-solid fa-folder"></i>
+                        <a href="{% url 'file_manager' directory.path|encoded_path %}">{{ directory.name }}</a>
+                      </li> 
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+            {% endif %}
         {% endfor %}
       </ul>
 

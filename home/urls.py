@@ -13,5 +13,7 @@ urlpatterns = [
     path('delete-dir/', views.delete_dir, name='delete_dir'),
     path('save-info/<str:file_path>/', views.save_info, name='save_info'),
     path('download_all/', views.download_all, name='download_all'),
+    path('chat/', views.chat, name='chat'),
+    path("ask_question/", views.ask_question, name="ask_question"),
 
 ]
