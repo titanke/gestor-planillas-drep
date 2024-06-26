@@ -38,7 +38,7 @@ def convert_bytes_to_mb(size_in_bytes):
     return size_in_mb
 
 
-genai.configure(api_key="AIzaSyA0M2ljxoufjlGy7bAGCMqw34217Mw6zag")
+genai.configure(api_key="prueba")
 #@login_required
 def ask_question(request):
     views_dir = os.path.dirname(__file__)
