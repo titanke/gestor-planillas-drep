@@ -32,10 +32,19 @@ body {
 	background-repeat:  no-repeat;
 	background-attachment: fixed;
 	background-size:  cover;
-    background-color: rgba(224, 11, 11, 0.108);
+    background-color: rgba(11, 164, 224, 0.108);
   }
 
+  #suggestedQuestions {
+    display: flex; /* Utilizar flexbox */
+    flex-wrap: wrap; /* Permitir que las preguntas se envuelvan a la siguiente línea */
+    justify-content: flex-end; /* Alinear a la derecha */
 
+}
+.suggested-question {
+    padding: 5px; /* Espaciado entre las preguntas */
+    /* Otros estilos (color de fondo, bordes, etc.) */
+}
 #chat4 .form-control {
     border-color: transparent;
 }
@@ -81,7 +90,7 @@ pre button {
     left: calc(68vw - 2rem); /* Adjust the position of the button */
     font-size: 0.9rem;
     padding: 0.5rem; /* Changed to a positive value */
-    background-color: rgb(50, 50, 50);
+    background-color: rgb(255, 4, 4);
     border-radius: 50px;
     border: none;
 }
@@ -226,13 +235,15 @@ pre button {
               {% endif %}
             
             </div>
+
+            <div class="suggested-question" id="suggestedQuestions">
+                <!-- Las preguntas sugeridas se generarán aquí dinámicamente -->
+            </div>
             <div class="loader-container">
               <div style="color: #242424b1;" class="d-flex align-items-center me-3" id="loading">
               </div>
               
-              <div class="suggested-questions" id="suggestedQuestions">
-                <!-- Las preguntas sugeridas se generarán aquí dinámicamente -->
-            </div>
+           
 
             </div>
             <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
@@ -286,30 +297,34 @@ pre button {
     document.querySelector('#userText').setAttribute('placeholder', 'Haz tu pregunta');
 }
 const suggestedQuestionsList = [
-        '¿Como inicio un tramite?',
-        'Muestrame todos los tramites que puedo hacer',
-        '¿Que es un fut?',
+        '¿Como inicio un tramite? ',
+        'Muestrame todos los tramites que puedo hacer ',
+        '¿Que es un fut? ',
     ];
 
     // Función para generar las burbujas de sugerencia
     function generateSuggestedQuestions() {
         const suggestedQuestionsDiv = document.querySelector('#suggestedQuestions');
         suggestedQuestionsList.forEach((question) => {
-            const questionSpan = document.createElement('span');
-            questionSpan.classList.add('suggested-question');
-            questionSpan.textContent = question;
-            questionSpan.style.padding = '10px';
-            questionSpan.style.backgroundColor = "rgba(253, 253, 253, 0.532)";
-            questionSpan.style.color = 'black';
-            questionSpan.style.cursor = 'pointer';
-            questionSpan.style.margin = '5px'; // Agregamos margen
-            
-            questionSpan.style.borderRadius = '10px'; // Agregamos border radius
-            questionSpan.onclick = () => {
+            const questionDiv = document.createElement('div'); // Contenedor para cada pregunta
+            questionDiv.classList.add('suggested-question');
+
+            //const questionSpan = document.createElement('span');
+            //questionSpan.classList.add('suggested-question');
+            questionDiv.textContent = question;
+            questionDiv.style.paddingInlineEnd = '3px 0'; // 10px arriba y abajo
+            questionDiv.style.backgroundColor = "rgba(253, 253, 253, 0.532)";
+            questionDiv.style.color = '#242424b1';
+            questionDiv.style.cursor = 'pointer';
+            questionDiv.style.margin = '3px'; // Agregamos margen
+
+            questionDiv.style.borderRadius = '8px'; // Agregamos border radius
+            questionDiv.onclick = () => {
                 document.querySelector('#userText').value = question; // Establecer el valor del campo de entrada
                 chat_ajax(); // Enviar la pregunta al chatbot
-            };            
-            suggestedQuestionsDiv.appendChild(questionSpan);
+            };
+            suggestedQuestionsDiv.appendChild(questionDiv);            
+            //suggestedQuestionsDiv.appendChild(questionSpan);
         });
     }
 
@@ -377,7 +392,7 @@ const suggestedQuestionsList = [
               var chatAreaDiv = document.createElement('div');
               chatAreaDiv.id = 'chatArea';
               chatAreaDiv.classList.add('small', 'p-2', 'ms-2', 'mb-1', 'me-auto', 'text-dark');
-              chatAreaDiv.style.backgroundColor = '#ffffffb8';
+              chatAreaDiv.style.backgroundColor = 'white';
               chatAreaDiv.style.fontSize = 'smaller';
               chatAreaDiv.style.borderRadius = '0px 20px 20px 20px';
               chatAreaDiv.innerHTML = response;
