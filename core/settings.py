@@ -169,9 +169,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 #LANGUAGE_CODE = "en-us"
 
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'es-es'
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/Lima"
 
 USE_I18N = True
 
@@ -197,7 +197,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #if not DEBUG:
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 
 # Default primary key field type

@@ -21,7 +21,7 @@ from .models import ChatBot
 from django.http import HttpResponseRedirect, JsonResponse
 import google.generativeai as genai
 
-
+@login_required
 def index(request):
     context = {}
     # Add context data here
